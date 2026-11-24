@@ -1,0 +1,15 @@
+﻿# 产物与日志
+library/
+logs/
+*.epub.tmp
+*.print.html
+
+# 本地 cookies（含订阅凭证，别提交）
+cookies/*.txt
+!cookies/README.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/

@@ -1,0 +1,76 @@
+# eMagzines 本地抓取配置
+# ---------------------------------------------------------------
+# 三种期刊：te = The Economist，ny = The New Yorker，time = TIME
+# 只需改这个文件，脚本不用动。
+
+global:
+  # 产物根目录（相对本文件所在目录）
+  output_dir: "library"
+  # 日志目录
+  log_dir: "logs"
+  # 每期最多收录多少篇文章（0 = 不限制）
+  max_articles: 25
+  # 是否额外输出每篇文章单独的 md 到 articles/ 子目录
+  per_article_md: true
+  # 是否把正文插图一起塞进 EPUB/PDF（会明显变大，默认关）
+  inline_images: false
+  # 单次 HTTP 超时（秒）
+  timeout: 45
+  # 失败重试次数
+  retries: 3
+  # 抓取失败时是否静默跳过（true）还是让整体退出码非零（false）
+  best_effort: true
+  # PDF 引擎：auto = 有 calibre 用 calibre，否则用 Chrome/Edge；也可写 calibre / chromium
+  pdf_engine: auto
+  # EPUB 引擎：builtin（内置，零依赖）或 calibre
+  epub_engine: builtin
+  # 是否在每期目录里写一份 meta.json
+  write_meta: true
+
+# 浏览器 cookies（可选）：把浏览器里导出的 Netscape 格式 cookies.txt 放到 cookies/<id>.txt
+# 主要给 The Economist 用——它的 HTML 页面有 Cloudflare 校验，带 cf_clearance 才能拿到全文。
+cookies:
+  te: "cookies/te.txt"
+  ny: "cookies/ny.txt"
+  time: "cookies/time.txt"
+
+magazines:
+  te:
+    # 已按要求关闭：The Economist 不再抓取（main.py / 定时任务 / 菜单全部跳过）
+    # 想恢复就改回 enabled: true
+    enabled: false
+    name: "The Economist"
+    folder: "the-economist"
+    # 最新一期：取 RSS 里 URL 日期最新的那一天（经济学人每周六出刊）
+    feed: "https://www.economist.com/latest/rss.xml"
+    extra_feeds:
+      - "https://www.economist.com/the-world-this-week/rss.xml"
+    # 阅读器代理前缀（可选）。直连被 Cloudflare 拒时可配，例如自建的
+    # "https://r.jina.ai/" ，脚本会请求 reader_proxy + 原始 URL。
+    reader_proxy: ""
+    # 生成封面用的主色
+    brand_color: "#E3120B"
+    cover_mode: "generated"     # generated | page
+  ny:
+    enabled: true
+    name: "The New Yorker"
+    folder: "the-new-yorker"
+    feed: "https://www.newyorker.com/feed/magazine/rss"
+    brand_color: "#0E0E0E"
+    cover_mode: "page"
+  time:
+    enabled: true
+    name: "TIME"
+    folder: "time"
+    feed: "https://time.com/feed/"
+    brand_color: "#E90606"
+    cover_mode: "page"
+    # TIME 的 RSS 自带全文，不需要逐篇抓页面
+    fulltext_in_feed: true
+
+# 定时任务（供 scripts/ 下的脚本读取）
+schedule:
+  # 每天几点跑，24 小时制
+  daily_time: "08:30"
+  # Windows 计划任务名称前缀
+  task_name: "eMagzines-Daily"
